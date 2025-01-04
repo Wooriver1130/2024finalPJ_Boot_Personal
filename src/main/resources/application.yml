@@ -1,6 +1,9 @@
 spring :
     application :
         name: edu3
+    servlet: 
+        multipart: 
+            enabled: true
 
     # DB 설정
     datasource:
