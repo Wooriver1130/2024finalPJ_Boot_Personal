@@ -382,9 +382,12 @@ public class CampLogController {
     public DataVO deleteLogByLogIdx(@RequestParam("logIdx")String logIdx) {
         DataVO dataVO = new DataVO();
         try {
-            log.info("logIdx: " + logIdx);
              int result = campLogService.getLogActiveZero(logIdx);
-            log.info("result: " + result);
+             if (result > 0 ) {
+                dataVO.setMessage("삭제가 완료되었습니다.");
+                dataVO.setSuccess(true);
+             }
+             return dataVO;
         } catch (Exception e) {
             e.printStackTrace();
         }
