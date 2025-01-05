@@ -50,8 +50,8 @@
     <select id="getLogContentByLogIdx"  resultType="CampLogContentVO" parameterType="String">
         select * from pjlogcontent where logIdx = #{logIdx} order by logContentOrder
     </select>
-    <select id="findRecommenduserIdx"  resultType="String" parameterType="map">
-        select * from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
+    <select id="isUserRemommend"  resultType="int" parameterType="map">
+        select count(*) from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
     </select>
     <select id="getLogFileByLogIdx"  resultType="FileVO" parameterType="String">
         select * from pjfile where fileTableType = 2 and fileTableIdx = #{logIdx}
@@ -76,6 +76,15 @@
             </foreach>
             )
     </select>
+    <delete id="toogleOff"   parameterType="map">
+        delete from pjlogrecommend where logIdx = #{logIdx} and userIdx = #{userIdx}
+    </delete>
+    <insert id="toogleOn" parameterType="map">
+        insert into pjlogrecommend (logIdx, userIdx) values(#{logIdx}, #{userIdx} )
+    </insert>
+    <update id="getLogActiveZero" parameterType="String">
+        update pjlog set logIsActive = 0 where logIdx = #{logIdx}
+    </update>
     
     
  </mapper>

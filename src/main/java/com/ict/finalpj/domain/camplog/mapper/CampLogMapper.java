@@ -2,10 +2,8 @@ package com.ict.finalpj.domain.camplog.mapper;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 
 import com.ict.finalpj.common.vo.FileVO;
 import com.ict.finalpj.domain.camp.vo.CampVO;
@@ -27,10 +25,13 @@ public interface CampLogMapper {
     int insertToPjtaginfo(TagInfoVO tvo);
     CampLogVO getLogDetailByLogIdx(String logIdx);
     List<CampLogContentVO> getLogContentByLogIdx(String logIdx);
-    String findRecommenduserIdx(Map<String, String> map);
+    int isUserRemommend(Map<String, String> map);
     List<FileVO> getLogFileByLogIdx(String logIdx);
     List<TagInfoVO> getLogTagByLogIdx(String logIdx);
     List<DealVO> getDealList();
     UserVO getUserDataByUserIdx(String userIdx);
     String[] getFileNamesBydealIdxes(List<String> dealIdxes);
+    int toogleOff(Map<String, String> map );
+    int toogleOn(Map<String, String> map );
+    int getLogActiveZero(String logIdx);
 }

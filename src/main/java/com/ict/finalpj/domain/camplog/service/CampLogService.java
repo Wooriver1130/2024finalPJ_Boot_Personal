@@ -1,6 +1,7 @@
 package com.ict.finalpj.domain.camplog.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.ict.finalpj.common.vo.FileVO;
@@ -22,10 +23,13 @@ public interface CampLogService {
     int insertToPjtaginfo(TagInfoVO tvo);
     CampLogVO getLogDetailByLogIdx(String logIdx);
     List<CampLogContentVO> getLogContentByLogIdx(String logIdx);
-    String findRecommenduserIdx(String logIdx, String userIdx);
+    int isUserRemommend(String logIdx, String userIdx);
     List<FileVO> getLogFileByLogIdx(String logIdx);
     List<TagInfoVO> getLogTagByLogIdx(String logIdx);
     List<DealVO> getDealList();
     UserVO getUserDataByUserIdx(String userIdx);
     String[] getFileNamesBydealIdxes(List<String> dealIdxes);
+    int toogleOff(Map<String, String> map);
+    int toogleOn(Map<String, String> map);
+    int getLogActiveZero(String logIdx);
 }

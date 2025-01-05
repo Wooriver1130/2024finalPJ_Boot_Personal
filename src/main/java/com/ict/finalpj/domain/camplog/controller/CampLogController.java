@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -251,47 +250,47 @@ public class CampLogController {
             Map<String, Object> map = new HashMap<>();
             CampLogVO logVO = campLogService.getLogDetailByLogIdx(logIdx);
             List<CampLogContentVO> contentVO = campLogService.getLogContentByLogIdx(logIdx);
-            String recommendIdx = campLogService.findRecommenduserIdx(logIdx, userIdx);
+            int isUserRemommend = campLogService.isUserRemommend(logIdx, userIdx);
             List<FileVO> fileVO = campLogService.getLogFileByLogIdx(logIdx);
             List<TagInfoVO> tagVO = campLogService.getLogTagByLogIdx(logIdx);
-            UserVO userVO = campLogService.getUserDataByUserIdx(userIdx);
             List<DealVO> dealVO = campLogService.getDealList();
-            log.info("tagVo: " + tagVO);
-            if (userVO != null) {
-                map.put("userVO", userVO);
-
-            }
-            if (recommendIdx != null) {
+            
+          
+            if (isUserRemommend > 0) {
                 map.put("doRecommend", true);
             } else {
                 map.put("doRecommend", false);
             }
-
+            
             if (logVO != null) {
                 map.put("logVO", logVO);
+                UserVO userVO = campLogService.getUserDataByUserIdx(logVO.getUserIdx());
+                if (userVO != null) {
+                    map.put("userVO", userVO);
+                    
+                }
             }
             if (dealVO != null) {
                 map.put("dealVO", dealVO);
             }
-            // if (tagVO != null) {
-            //     List<String> tempt1 = new ArrayList<>();
-            //     for (TagInfoVO k : tagVO) {
-            //         if (k.getDealIdx() != null) {
-            //             tempt1.add(k.getDealIdx());
-            //         }
-            //     }
-            //     Set<String> tempt2 = new HashSet<>(tempt1);
-            //     List<String> dealIdxes = new ArrayList<>(tempt2);
-            //     String[] fileNames = campLogService.getFileNamesBydealIdxes(dealIdxes);
+            if (tagVO != null) {
+                List<String> tempt1 = new ArrayList<>();
+                for (TagInfoVO k : tagVO) {
+                    if (k.getDealIdx() != null) {
+                        tempt1.add(k.getDealIdx());
+                    }
+                }
+                Set<String> tempt2 = new HashSet<>(tempt1);
+                List<String> dealIdxes = new ArrayList<>(tempt2);
+                String[] fileNames = campLogService.getFileNamesBydealIdxes(dealIdxes);
 
-            //     Map<String, String> fNameBydealIdx = new HashMap<>();
+                Map<String, String> fNameBydealIdx = new HashMap<>();
 
-            //     for (int i = 0; i < fileNames.length; i++) {
-            //         fNameBydealIdx.put(dealIdxes.get(i), fileNames[i]);
-            //     }
-            //     log.info("fNameBydealIdx: " + fNameBydealIdx);
-            //     map.put("fNameByDealIdx", fNameBydealIdx);
-            // }
+                for (int i = 0; i < fileNames.length; i++) {
+                    fNameBydealIdx.put(dealIdxes.get(i), fileNames[i]);
+                }
+                map.put("fNameByDealIdx", fNameBydealIdx);
+            }
 
             List<DetailDTO> totalData = new ArrayList<>(); // 상세페이지에 뿌리기 위한 가공된 데이터
             if (contentVO != null && fileVO != null) {
@@ -305,15 +304,17 @@ public class CampLogController {
                     if (i + 1 < contentVO.size()) {
                         data.setLogContent(contentVO.get(i + 1).getLogContent());
                     }
+
                     if (i != -1) {
                         if (i < fileVO.size()) {
                             data.setFileName(fileVO.get(i).getFileName());
                         }
+
                         if (tagVO != null) {
                             List<DetailTagData> fieldTagData = new ArrayList<>();
                             for (int j = 0; j < tagVO.size(); j++) {
-                                DetailTagData tagData = new DetailTagData();
-                                if (tagVO.get(j).getFieldIdx().equals(String.valueOf(j))) {
+                                if (tagVO.get(j).getFieldIdx().equals(String.valueOf(data.getOrder()))) {
+                                    DetailTagData tagData = new DetailTagData();
                                     tagData.setDealIdx(tagVO.get(j).getDealIdx());
                                     tagData.setTagX(tagVO.get(j).getTagX());
                                     tagData.setTagY(tagVO.get(j).getTagY());
@@ -322,6 +323,7 @@ public class CampLogController {
                                     fieldTagData.add(tagData);
                                 }
                             }
+                            data.setTagData(fieldTagData);
                         }
                     }
                     totalData.add(data);
@@ -345,6 +347,49 @@ public class CampLogController {
         }
         dataVO.setSuccess(false);
         dataVO.setMessage("서버 오류 발생");
+        return dataVO;
+    }
+    @GetMapping("/toggleRecommend")
+    public DataVO getToggleRecommend(@RequestParam("logIdx") String logIdx, @RequestParam("userIdx") String userIdx, @RequestParam("doRecommend")String doRecommend) {
+        DataVO dataVO = new DataVO();
+        try {
+            Map<String, String> map = new HashMap<>();
+            map.put("logIdx", logIdx);
+            map.put("userIdx", userIdx);
+            if (doRecommend.equals("1")) {
+                int result = campLogService.toogleOff(map);
+                if (result > 0 ) {
+                    dataVO.setSuccess(true);
+                    dataVO.setData("0");
+                }
+            }else {
+                int result = campLogService.toogleOn(map);
+                if (result > 0 ) {
+                    dataVO.setSuccess(true);
+                    dataVO.setData("1");
+                }
+            }
+            return dataVO;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        dataVO.setSuccess(false);
+        dataVO.setMessage("서버 오류 발생");
+        return dataVO;
+    }
+
+    @PostMapping("/logDelete")
+    public DataVO deleteLogByLogIdx(@RequestParam("logIdx")String logIdx) {
+        DataVO dataVO = new DataVO();
+        try {
+            log.info("logIdx: " + logIdx);
+             int result = campLogService.getLogActiveZero(logIdx);
+            log.info("result: " + result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        dataVO.setSuccess(false);
+        dataVO.setMessage("작성 중 오류 발생");
         return dataVO;
     }
 

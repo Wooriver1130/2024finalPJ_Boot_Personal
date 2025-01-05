@@ -72,11 +72,11 @@ public class CampLogServiceImpl implements CampLogService {
     }
 
     @Override
-    public String findRecommenduserIdx(String logIdx, String userIdx) {
+    public int isUserRemommend(String logIdx, String userIdx) {
         Map<String, String> map = new HashMap<>();
         map.put("logIdx", logIdx);
         map.put("userIdx", userIdx);
-        return campLogMapper.findRecommenduserIdx(map);
+        return campLogMapper.isUserRemommend(map);
     }
 
     @Override
@@ -102,6 +102,21 @@ public class CampLogServiceImpl implements CampLogService {
     @Override
     public String[] getFileNamesBydealIdxes(List<String> dealIdxes) {
         return campLogMapper.getFileNamesBydealIdxes(dealIdxes);
+    }
+
+    @Override
+    public int toogleOff(Map<String, String> map) {
+        return campLogMapper.toogleOff(map);
+    }
+
+    @Override
+    public int toogleOn(Map<String, String> map) {
+        return campLogMapper.toogleOn(map);
+    }
+
+    @Override
+    public int getLogActiveZero(String logIdx) {
+        return campLogMapper.getLogActiveZero(logIdx);
     }
 
 
